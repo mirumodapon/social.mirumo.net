@@ -36,15 +36,15 @@ const Tag = 'div';
   onclick={hasContent ? `location.href='/post/${id}'` : undefined} 
   class:list={['post-card', { clickable: hasContent }]}
 >
-  <div class="post-avatar">
+  <a href={`/user/${handle}`} class="post-avatar" onclick="event.stopPropagation();">
     <div class="avatar-placeholder" style={`background:${avatarColor}`}>
       {avatar === 'auto' ? avatarLetter : avatar}
     </div>
-  </div>
+  </a>
   <div class="post-body">
     <div class="post-header">
-      <span class="post-author">{author}</span>
-      <span class="post-handle">@{handle}</span>
+      <a href={`/user/${handle}`} class="post-author" onclick="event.stopPropagation();">{author}</a>
+      <a href={`/user/${handle}`} class="post-handle" onclick="event.stopPropagation();">@{handle}</a>
       <span class="post-date">{formatDate(date)}</span>
     </div>
     <p class="post-text">{abstractText}</p>
@@ -66,6 +66,21 @@ const Tag = 'div';
 
 <style>
   .tag:hover {
+    text-decoration: underline;
+  }
+  .post-avatar {
+    display: block;
+    flex-shrink: 0;
+    border-radius: 50%;
+    transition: opacity 0.2s;
+  }
+  .post-avatar:hover {
+    opacity: 0.85;
+  }
+  .post-author:hover {
+    text-decoration: underline;
+  }
+  .post-handle:hover {
     text-decoration: underline;
   }
 </style>

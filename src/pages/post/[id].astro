@@ -59,15 +59,15 @@ function formatFullDate(dateStr: string) {
 
   <article class="post-detail">
     <div class="post-header">
-      <div class="post-avatar">
+      <a href={`/user/${post.data.handle}`} class="post-avatar">
         <div class="avatar-placeholder" style={`background:${avatarColor};width:48px;height:48px;`}>
           {post.data.avatar === 'auto' ? avatarLetter : post.data.avatar}
         </div>
-      </div>
-      <div class="post-author-info">
+      </a>
+      <a href={`/user/${post.data.handle}`} class="post-author-info">
         <span class="post-author">{post.data.author}</span>
         <span class="post-handle">@{post.data.handle}</span>
-      </div>
+      </a>
     </div>
 
     <div class="post-text">
@@ -108,3 +108,21 @@ function formatFullDate(dateStr: string) {
     </div>
   </article>
 </BaseLayout>
+
+<style>
+  .post-avatar {
+    display: block;
+    border-radius: 50%;
+    transition: opacity 0.2s;
+  }
+  .post-avatar:hover {
+    opacity: 0.85;
+  }
+  .post-author-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .post-author-info:hover .post-author {
+    text-decoration: underline;
+  }
+</style>

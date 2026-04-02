@@ -724,21 +724,6 @@ button {
   vertical-align: middle;
 }
 
-.profile-stats {
-  display: flex;
-  gap: 20px;
-  margin-top: 12px;
-}
-
-.profile-stats span {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.profile-stats span strong {
-  color: var(--text-primary);
-}
-
 /* Post Detail */
 .post-detail {
   padding: 16px;

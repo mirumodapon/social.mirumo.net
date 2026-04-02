@@ -1,30 +1,45 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostCard from '../../components/PostCard.astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import PostCard from '../../../../components/PostCard.astro';
 import { getCollection } from 'astro:content';
 
 const PER_PAGE = 5;
 
 export async function getStaticPaths() {
+  const PER_PAGE = 5;
   const posts = await getCollection('posts');
   const users = await getCollection('users');
-  const handles = [...new Set(posts.map((p) => p.data.handle))];
-  return handles.map((handle) => {
-    const userProfile = users.find((u) => u.data.handle === handle);
-    return {
-      params: { handle },
-      props: {
-        handle,
-        userProfile: userProfile?.data ?? null,
-        userPosts: posts
-          .filter((p) => p.data.handle === handle)
-          .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()),
-      },
-    };
+  const handleCounts = new Map<string, number>();
+
+  posts.forEach((post) => {
+    const h = post.data.handle;
+    handleCounts.set(h, (handleCounts.get(h) ?? 0) + 1);
   });
+
+  const paths: { params: { handle: string; page: string }; props: { userProfile: any } }[] = [];
+  for (const [handle, count] of handleCounts.entries()) {
+    const totalPages = Math.max(1, Math.ceil(count / PER_PAGE));
+    const userProfile = users.find((u) => u.data.handle === handle);
+    for (let page = 2; page <= totalPages; page += 1) {
+      paths.push({
+        params: { handle, page: String(page) },
+        props: { userProfile: userProfile?.data ?? null },
+      });
+    }
+  }
+
+  return paths;
 }
 
-const { handle, userProfile, userPosts } = Astro.props;
+const { userProfile } = Astro.props;
+const handle = Astro.params.handle;
+const page = Number(Astro.params.page) || 2;
+
+const posts = await getCollection('posts');
+const userPosts = posts
+  .filter((p) => p.data.handle === handle)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
 const postData = userPosts[0]?.data;
 
 const displayName = userProfile?.name || postData?.author || handle;
@@ -42,9 +57,9 @@ const colorIndex = displayName.charCodeAt(0) % avatarColors.length;
 const avatarColor = avatarColors[colorIndex];
 const avatarLetter = displayName.charAt(0).toUpperCase();
 
-const currentPage = 1;
 const totalPages = Math.max(1, Math.ceil(userPosts.length / PER_PAGE));
-const pagePosts = userPosts.slice(0, PER_PAGE);
+const currentPage = Math.min(Math.max(page, 1), totalPages);
+const pagePosts = userPosts.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 const basePath = `/user/${handle}`;
 const pagePath = (num: number) => (num === 1 ? basePath : `${basePath}/page/${num}`);
 
@@ -80,7 +95,7 @@ function getPaginationItems(totalPages: number, currentPage: number) {
 const paginationItems = getPaginationItems(totalPages, currentPage);
 ---
 
-<BaseLayout title={`${displayName} (@${handle}) / Social`}>
+<BaseLayout title={`${displayName} (@${handle}) 第 ${currentPage} 頁 / Social`}>
   <div class="page-header">
     <div class="back-btn">
       <a href="/" class="back-arrow" onclick="history.length > 1 ? history.back() : null; return false;">

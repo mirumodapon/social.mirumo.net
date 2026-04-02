@@ -17,4 +17,18 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+const users = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/users' }),
+  schema: z.object({
+    name: z.string(),
+    handle: z.string(),
+    avatar: z.string().default('auto'),
+    bio: z.string().default(''),
+    location: z.string().optional(),
+    website: z.string().optional(),
+    joinDate: z.string().default('2024-01'),
+    bannerColor: z.string().optional(),
+  }),
+});
+
+export const collections = { posts, users };
