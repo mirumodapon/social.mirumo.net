@@ -543,20 +543,32 @@ button {
   gap: 8px;
   justify-content: center;
   padding: 16px 0;
+  overflow-x: auto;
 }
 
 .pagination-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  padding: 10px 14px;
+  min-width: 40px;
+  padding: 10px 12px;
   border-radius: 9999px;
   border: 1px solid transparent;
   background: var(--bg-secondary);
   color: var(--text-primary);
   font-size: 14px;
   transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.pagination-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  min-width: 40px;
 }
 
 .pagination-link:hover {

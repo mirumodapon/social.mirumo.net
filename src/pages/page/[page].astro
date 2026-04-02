@@ -22,6 +22,35 @@ const page = Number(Astro.params.page) || 1;
 const currentPage = Math.min(Math.max(page, 1), totalPages);
 const pagePosts = sortedPosts.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 const pagePath = (num: number) => (num === 1 ? '/' : `/page/${num}`);
+
+function getPaginationItems(totalPages: number, currentPage: number) {
+  const pages = [];
+  const maxVisible = 7;
+
+  if (totalPages <= maxVisible) {
+    for (let i = 1; i <= totalPages; i += 1) {
+      pages.push({ type: 'page', number: i });
+    }
+    return pages;
+  }
+
+  pages.push({ type: 'page', number: 1 });
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(totalPages - 1, currentPage + 1);
+
+  if (start > 2) pages.push({ type: 'dots' });
+
+  for (let i = start; i <= end; i += 1) {
+    pages.push({ type: 'page', number: i });
+  }
+
+  if (end < totalPages - 1) pages.push({ type: 'dots' });
+
+  pages.push({ type: 'page', number: totalPages });
+  return pages;
+}
+
+const paginationItems = getPaginationItems(totalPages, currentPage);
 ---
 
 <BaseLayout title={`首頁第 ${currentPage} 頁 / Social`}>
@@ -53,17 +82,18 @@ const pagePath = (num: number) => (num === 1 ? '/' : `/page/${num}`);
       {currentPage > 1 && (
         <a href={pagePath(currentPage - 1)} class="pagination-link">上一頁</a>
       )}
-      {Array.from({ length: totalPages }, (_, index) => {
-        const pageNumber = index + 1;
-        return (
+      {paginationItems.map((item) =>
+        item.type === 'dots' ? (
+          <span class="pagination-dots">…</span>
+        ) : (
           <a
-            href={pagePath(pageNumber)}
-            class:list={['pagination-link', { active: pageNumber === currentPage }]}
+            href={pagePath(item.number)}
+            class:list={['pagination-link', { active: item.number === currentPage }]}
           >
-            {pageNumber}
+            {item.number}
           </a>
-        );
-      })}
+        )
+      )}
       {currentPage < totalPages && (
         <a href={pagePath(currentPage + 1)} class="pagination-link">下一頁</a>
       )}

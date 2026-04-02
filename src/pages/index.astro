@@ -7,9 +7,38 @@ const PER_PAGE = 5;
 const posts = await getCollection('posts');
 const sortedPosts = posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const totalPages = Math.max(1, Math.ceil(sortedPosts.length / PER_PAGE));
-const page = 1;
+const currentPage = 1;
 const pagePosts = sortedPosts.slice(0, PER_PAGE);
 const pagePath = (num: number) => (num === 1 ? '/' : `/page/${num}`);
+
+function getPaginationItems(totalPages: number, currentPage: number) {
+  const pages = [];
+  const maxVisible = 7;
+
+  if (totalPages <= maxVisible) {
+    for (let i = 1; i <= totalPages; i += 1) {
+      pages.push({ type: 'page', number: i });
+    }
+    return pages;
+  }
+
+  pages.push({ type: 'page', number: 1 });
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(totalPages - 1, currentPage + 1);
+
+  if (start > 2) pages.push({ type: 'dots' });
+
+  for (let i = start; i <= end; i += 1) {
+    pages.push({ type: 'page', number: i });
+  }
+
+  if (end < totalPages - 1) pages.push({ type: 'dots' });
+
+  pages.push({ type: 'page', number: totalPages });
+  return pages;
+}
+
+const paginationItems = getPaginationItems(totalPages, currentPage);
 ---
 
 <BaseLayout title="首頁 / Social">
@@ -37,22 +66,23 @@ const pagePath = (num: number) => (num === 1 ? '/' : `/page/${num}`);
 
   {totalPages > 1 && (
     <div class="pagination">
-      {page > 1 && (
-        <a href={pagePath(page - 1)} class="pagination-link">上一頁</a>
+      {currentPage > 1 && (
+        <a href={pagePath(currentPage - 1)} class="pagination-link">上一頁</a>
       )}
-      {Array.from({ length: totalPages }, (_, index) => {
-        const pageNumber = index + 1;
-        return (
+      {paginationItems.map((item) =>
+        item.type === 'dots' ? (
+          <span class="pagination-dots">…</span>
+        ) : (
           <a
-            href={pagePath(pageNumber)}
-            class:list={['pagination-link', { active: pageNumber === page }]}
+            href={pagePath(item.number)}
+            class:list={['pagination-link', { active: item.number === currentPage }]}
           >
-            {pageNumber}
+            {item.number}
           </a>
-        );
-      })}
-      {page < totalPages && (
-        <a href={pagePath(page + 1)} class="pagination-link">下一頁</a>
+        )
+      )}
+      {currentPage < totalPages && (
+        <a href={pagePath(currentPage + 1)} class="pagination-link">下一頁</a>
       )}
     </div>
   )}
