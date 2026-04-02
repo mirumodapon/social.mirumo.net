@@ -1,20 +1,33 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PostCard from '../components/PostCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
 import { getCollection } from 'astro:content';
 
 const PER_PAGE = 5;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const PER_PAGE = 5;
+  const totalPages = Math.max(1, Math.ceil(posts.length / PER_PAGE));
+
+  return Array.from({ length: totalPages }, (_, index) => ({
+    params: { page: String(index + 1) },
+  }));
+}
+
 const posts = await getCollection('posts');
 const sortedPosts = posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const totalPages = Math.max(1, Math.ceil(sortedPosts.length / PER_PAGE));
-const page = 1;
-const pagePosts = sortedPosts.slice(0, PER_PAGE);
+const page = Number(Astro.params.page) || 1;
+const currentPage = Math.min(Math.max(page, 1), totalPages);
+const pagePosts = sortedPosts.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 const pagePath = (num: number) => (num === 1 ? '/' : `/page/${num}`);
 ---
 
-<BaseLayout title="首頁 / Social">
+<BaseLayout title={`首頁第 ${currentPage} 頁 / Social`}>
   <div class="page-header">
     <h1>首頁</h1>
+    <p class="subtitle">第 {currentPage} 頁，共 {totalPages} 頁</p>
   </div>
 
   <div class="tabs">
@@ -37,22 +50,22 @@ const pagePath = (num: number) => (num === 1 ? '/' : `/page/${num}`);
 
   {totalPages > 1 && (
     <div class="pagination">
-      {page > 1 && (
-        <a href={pagePath(page - 1)} class="pagination-link">上一頁</a>
+      {currentPage > 1 && (
+        <a href={pagePath(currentPage - 1)} class="pagination-link">上一頁</a>
       )}
       {Array.from({ length: totalPages }, (_, index) => {
         const pageNumber = index + 1;
         return (
           <a
             href={pagePath(pageNumber)}
-            class:list={['pagination-link', { active: pageNumber === page }]}
+            class:list={['pagination-link', { active: pageNumber === currentPage }]}
           >
             {pageNumber}
           </a>
         );
       })}
-      {page < totalPages && (
-        <a href={pagePath(page + 1)} class="pagination-link">下一頁</a>
+      {currentPage < totalPages && (
+        <a href={pagePath(currentPage + 1)} class="pagination-link">下一頁</a>
       )}
     </div>
   )}

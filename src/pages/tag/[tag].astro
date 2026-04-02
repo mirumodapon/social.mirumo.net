@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const tagSet = new Set<string>();
+
+  posts.forEach((post) => {
+    post.data.tags?.forEach((tag) => tagSet.add(tag));
+  });
+
+  return Array.from(tagSet).map((tag) => ({ params: { tag } }));
+}
+
+const posts = await getCollection('posts');
+const tag = Astro.params.tag;
+const filteredPosts = posts
+  .filter((post) => post.data.tags?.includes(tag))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const postCount = filteredPosts.length;
+---
+
+<BaseLayout title={`#${tag} / Social`}>
+  <div class="page-header">
+    <h1>標籤：#{tag}</h1>
+    <p class="subtitle">共 {postCount} 篇文章</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active">為你推薦</button>
+    <button class="tab">追蹤中</button>
+  </div>
+
+  {postCount > 0 ? (
+    filteredPosts.map((post) => (
+      <PostCard
+        id={post.id}
+        author={post.data.author}
+        handle={post.data.handle}
+        avatar={post.data.avatar}
+        abstract={post.data.abstract}
+        date={post.data.date}
+        tags={post.data.tags}
+        hasContent={!!post.body?.trim()}
+      />
+    ))
+  ) : (
+    <div class="empty-message">目前沒有標籤為 #{tag} 的文章。</div>
+  )}
+</BaseLayout>

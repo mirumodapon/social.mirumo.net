@@ -13,7 +13,12 @@ posts.forEach((post) => {
 const trends = Array.from(tagCounts.entries())
   .sort((a, b) => b[1] - a[1])
   .slice(0, 5)
-  .map(([tag, count]) => ({ name: `#${tag}`, count: `${count} 則貼文` }));
+  .map(([tag, count]) => ({
+    tag,
+    label: `#${tag}`,
+    count: `${count} 則貼文`,
+    href: `/tag/${encodeURIComponent(tag)}`,
+  }));
 ---
 
 <aside class="sidebar-right">
@@ -26,10 +31,10 @@ const trends = Array.from(tagCounts.entries())
     <h2 class="widget-title">熱門標籤</h2>
     {trends.length > 0 ? (
       trends.map((trend) => (
-        <div class="widget-item">
-          <div class="trend-name">{trend.name}</div>
+        <a href={trend.href} class="widget-item">
+          <div class="trend-name">{trend.label}</div>
           <div class="trend-count">{trend.count}</div>
-        </div>
+        </a>
       ))
     ) : (
       <div class="widget-item">目前尚無標籤</div>

@@ -347,6 +347,16 @@ button {
   text-decoration: underline;
 }
 
+.empty-message {
+  padding: 24px 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 16px 0;
+}
+
 .post-tags {
   display: flex;
   gap: 8px;
@@ -493,6 +503,7 @@ button {
 }
 
 .widget-item {
+  display: block;
   padding: 12px 16px;
   transition: background 0.15s;
   cursor: pointer;
@@ -524,6 +535,38 @@ button {
   font-size: 15px;
   cursor: pointer;
   transition: background 0.15s;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 10px 14px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.pagination-link:hover {
+  background: var(--bg-hover);
+}
+
+.pagination-link.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
 }
 
 .widget-show-more:hover {
