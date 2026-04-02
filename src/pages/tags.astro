@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const PER_PAGE = 10;
+
+const posts = await getCollection('posts');
+const tagCounts = new Map<string, number>();
+
+posts.forEach((post) => {
+  post.data.tags?.forEach((tag) => {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  });
+});
+
+const tags = Array.from(tagCounts.entries())
+  .sort((a, b) => b[1] - a[1])
+  .map(([tag, count]) => ({
+    tag,
+    count,
+    href: `/tag/${encodeURIComponent(tag)}`,
+  }));
+
+const totalPages = Math.max(1, Math.ceil(tags.length / PER_PAGE));
+const currentPage = 1;
+const pageTags = tags.slice(0, PER_PAGE);
+
+function pagePath(page: number) {
+  return page === 1 ? '/tags' : `/tags/page/${page}`;
+}
+
+function getPaginationItems(totalPages: number, currentPage: number) {
+  const pages = [];
+  const maxVisible = 7;
+
+  if (totalPages <= maxVisible) {
+    for (let i = 1; i <= totalPages; i += 1) {
+      pages.push({ type: 'page', number: i });
+    }
+    return pages;
+  }
+
+  pages.push({ type: 'page', number: 1 });
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(totalPages - 1, currentPage + 1);
+
+  if (start > 2) pages.push({ type: 'dots' });
+  for (let i = start; i <= end; i += 1) {
+    pages.push({ type: 'page', number: i });
+  }
+  if (end < totalPages - 1) pages.push({ type: 'dots' });
+  pages.push({ type: 'page', number: totalPages });
+
+  return pages;
+}
+
+const paginationItems = getPaginationItems(totalPages, currentPage);
+---
+
+<BaseLayout title="所有標籤 / Social">
+  <div class="page-header">
+    <h1>所有標籤</h1>
+    <p class="subtitle">第 {currentPage} 頁，共 {totalPages} 頁</p>
+  </div>
+
+  {pageTags.length > 0 ? (
+    <div class="tag-list">
+      {pageTags.map((item) => (
+        <a href={item.href} class="tag-overview-item">
+          <div class="tag-label">#{item.tag}</div>
+          <div class="tag-count">{item.count} 篇文章</div>
+        </a>
+      ))}
+    </div>
+  ) : (
+    <div class="empty-message">目前尚無標籤。</div>
+  )}
+
+  {totalPages > 1 && (
+    <div class="pagination">
+      {currentPage > 1 && (
+        <a href={pagePath(currentPage - 1)} class="pagination-link">上一頁</a>
+      )}
+      {paginationItems.map((item) =>
+        item.type === 'dots' ? (
+          <span class="pagination-dots">…</span>
+        ) : (
+          <a
+            href={pagePath(item.number)}
+            class:list={['pagination-link', { active: item.number === currentPage }]}
+          >
+            {item.number}
+          </a>
+        )
+      )}
+      {currentPage < totalPages && (
+        <a href={pagePath(currentPage + 1)} class="pagination-link">下一頁</a>
+      )}
+    </div>
+  )}
+</BaseLayout>
