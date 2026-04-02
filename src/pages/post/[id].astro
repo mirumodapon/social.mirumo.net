@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  // Only generate detail pages for posts that have body content
+  return posts
+    .filter((post) => !!post.body?.trim())
+    .map((post) => ({
+      params: { id: post.id },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const avatarColors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#f97316'];
+const colorIndex = post.data.author.charCodeAt(0) % avatarColors.length;
+const avatarColor = avatarColors[colorIndex];
+const avatarLetter = post.data.author.charAt(0).toUpperCase();
+
+function formatFullDate(dateStr: string) {
+  const d = new Date(dateStr);
+  const hours = d.getHours().toString().padStart(2, '0');
+  const mins = d.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${mins} · ${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+}
+---
+
+<BaseLayout title={`${post.data.author} 的貼文 / Social`}>
+  <div class="page-header">
+    <div class="back-btn">
+      <a href="/" class="back-arrow"><i class="ti ti-arrow-left"></i></a>
+      <h1>貼文</h1>
+    </div>
+  </div>
+
+  <article class="post-detail">
+    <div class="post-header">
+      <div class="post-avatar">
+        <div class="avatar-placeholder" style={`background:${avatarColor};width:48px;height:48px;`}>
+          {post.data.avatar === 'auto' ? avatarLetter : post.data.avatar}
+        </div>
+      </div>
+      <div class="post-author-info">
+        <span class="post-author">{post.data.author}</span>
+        <span class="post-handle">@{post.data.handle}</span>
+      </div>
+    </div>
+
+    <div class="post-text">
+      <Content />
+    </div>
+
+    {post.data.tags && post.data.tags.length > 0 && (
+      <div class="post-tags" style="margin: 12px 0;">
+        {post.data.tags.map((tag: string) => (
+          <span class="tag">#{tag}</span>
+        ))}
+      </div>
+    )}
+
+    <div class="post-timestamp">
+      {formatFullDate(post.data.date)}
+    </div>
+  </article>
+</BaseLayout>

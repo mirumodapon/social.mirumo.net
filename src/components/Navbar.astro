@@ -1,0 +1,26 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<aside class="sidebar-left">
+  <div class="logo">
+    Logo
+  </div>
+
+  <nav>
+    <ul class="nav-items">
+      <li class="nav-item" class:list={[{ active: currentPath === '/' }]}>
+        <a href="/">
+          <span class="nav-icon"><i class="ti ti-home"></i></span>
+          <span class="nav-text">首頁</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <span>
+          <span class="nav-icon"><i class="ti ti-search"></i></span>
+          <span class="nav-text">探索</span>
+        </span>
+      </li>
+    </ul>
+  </nav>
+</aside>

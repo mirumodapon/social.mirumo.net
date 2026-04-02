@@ -1,0 +1,56 @@
+---
+interface Props {
+  id: string;
+  author: string;
+  handle: string;
+  avatar: string;
+  abstract: string;
+  date: string;
+  tags?: string[];
+  hasContent: boolean;
+}
+
+const { id, author, handle, avatar, abstract: abstractText, date, tags, hasContent } = Astro.props;
+
+const avatarColors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#f97316'];
+const colorIndex = author.charCodeAt(0) % avatarColors.length;
+const avatarColor = avatarColors[colorIndex];
+const avatarLetter = author.charAt(0).toUpperCase();
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  if (hours < 1) return '剛剛';
+  if (hours < 24) return `${hours}小時`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}天`;
+  return `${d.getMonth() + 1}月${d.getDate()}日`;
+}
+
+const Tag = hasContent ? 'a' : 'div';
+---
+
+<Tag href={hasContent ? `/post/${id}` : undefined} class:list={['post-card', { clickable: hasContent }]}>
+  <div class="post-avatar">
+    <div class="avatar-placeholder" style={`background:${avatarColor}`}>
+      {avatar === 'auto' ? avatarLetter : avatar}
+    </div>
+  </div>
+  <div class="post-body">
+    <div class="post-header">
+      <span class="post-author">{author}</span>
+      <span class="post-handle">@{handle}</span>
+      <span class="post-date">{formatDate(date)}</span>
+    </div>
+    <p class="post-text">{abstractText}</p>
+    {tags && tags.length > 0 && (
+      <div class="post-tags">
+        {tags.map((tag) => (
+          <span class="tag">#{tag}</span>
+        ))}
+      </div>
+    )}
+  </div>
+</Tag>

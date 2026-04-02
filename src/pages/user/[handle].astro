@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const handles = [...new Set(posts.map((p) => p.data.handle))];
+  return handles.map((handle) => ({
+    params: { handle },
+    props: {
+      handle,
+      userPosts: posts
+        .filter((p) => p.data.handle === handle)
+        .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()),
+    },
+  }));
+}
+
+const { handle, userPosts } = Astro.props;
+const userData = userPosts[0]?.data;
+
+const avatarColors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#f97316'];
+const colorIndex = (userData?.author || 'U').charCodeAt(0) % avatarColors.length;
+const avatarColor = avatarColors[colorIndex];
+const avatarLetter = (userData?.author || 'U').charAt(0).toUpperCase();
+---
+
+<BaseLayout title={`${userData?.author || handle} (@${handle}) / Social`}>
+  <div class="page-header">
+    <div class="back-btn">
+      <a href="/" class="back-arrow"><i class="ti ti-arrow-left"></i></a>
+      <div>
+        <h1>{userData?.author || handle}</h1>
+        <div class="subtitle">{userPosts.length} 則貼文</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-banner"></div>
+
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <div class="avatar-placeholder" style={`background:${avatarColor}`}>
+        {userData?.avatar === 'auto' ? avatarLetter : userData?.avatar}
+      </div>
+    </div>
+    <div class="profile-name">{userData?.author || handle}</div>
+    <div class="profile-handle-text">@{handle}</div>
+    <div class="profile-bio">用 Markdown 記錄生活，分享技術與想法</div>
+    <div class="profile-meta">
+      <span><i class="ti ti-calendar"></i> 2024年1月 加入</span>
+    </div>
+    <div class="profile-stats">
+      <span><strong>128</strong> 追蹤中</span>
+      <span><strong>256</strong> 追蹤者</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active">貼文</button>
+    <button class="tab">回覆</button>
+    <button class="tab">媒體</button>
+    <button class="tab">喜歡</button>
+  </div>
+
+  {userPosts.map((post: any) => (
+    <PostCard
+      id={post.id}
+      author={post.data.author}
+      handle={post.data.handle}
+      avatar={post.data.avatar}
+      abstract={post.data.abstract}
+      date={post.data.date}
+      tags={post.data.tags}
+      hasContent={!!post.body?.trim()}
+    />
+  ))}
+</BaseLayout>
