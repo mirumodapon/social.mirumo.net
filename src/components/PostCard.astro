@@ -29,10 +29,13 @@ function formatDate(dateStr: string) {
   return `${d.getMonth() + 1}月${d.getDate()}日`;
 }
 
-const Tag = hasContent ? 'a' : 'div';
+const Tag = 'div';
 ---
 
-<Tag href={hasContent ? `/post/${id}` : undefined} class:list={['post-card', { clickable: hasContent }]}>
+<Tag 
+  onclick={hasContent ? `location.href='/post/${id}'` : undefined} 
+  class:list={['post-card', { clickable: hasContent }]}
+>
   <div class="post-avatar">
     <div class="avatar-placeholder" style={`background:${avatarColor}`}>
       {avatar === 'auto' ? avatarLetter : avatar}
@@ -48,9 +51,21 @@ const Tag = hasContent ? 'a' : 'div';
     {tags && tags.length > 0 && (
       <div class="post-tags">
         {tags.map((tag) => (
-          <span class="tag">#{tag}</span>
+          <a 
+            href={`/tag/${encodeURIComponent(tag)}`} 
+            class="tag"
+            onclick="event.stopPropagation();"
+          >
+            #{tag}
+          </a>
         ))}
       </div>
     )}
   </div>
 </Tag>
+
+<style>
+  .tag:hover {
+    text-decoration: underline;
+  }
+</style>

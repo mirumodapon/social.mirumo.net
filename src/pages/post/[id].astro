@@ -75,7 +75,7 @@ function formatFullDate(dateStr: string) {
     {post.data.tags && post.data.tags.length > 0 && (
       <div class="post-tags" style="margin: 12px 0;">
         {post.data.tags.map((tag: string) => (
-          <span class="tag">#{tag}</span>
+          <a href={`/tag/${encodeURIComponent(tag)}`} class="tag">#{tag}</a>
         ))}
       </div>
     )}
