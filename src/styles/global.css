@@ -9,8 +9,25 @@
   --text-secondary: #71767b;
   --accent: #1d9bf0;
   --accent-hover: #1a8cd8;
+  --bg-header: rgba(0, 0, 0, 0.65);
+  --accent-alpha-12: rgba(29, 155, 240, 0.12);
+  --accent-alpha-05: rgba(29, 155, 240, 0.05);
+  --banner-gradient-end: #1a1a2e;
   --radius: 16px;
   --max-width: 1280px;
+}
+
+[data-theme='light'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f9f9;
+  --bg-hover: #eff1f1;
+  --border-color: #eff3f4;
+  --text-primary: #0f1419;
+  --text-secondary: #536471;
+  --bg-header: rgba(255, 255, 255, 0.85);
+  --accent-alpha-12: rgba(29, 155, 240, 0.12);
+  --accent-alpha-05: rgba(29, 155, 240, 0.05);
+  --banner-gradient-end: #8cc6f7;
 }
 
 * {
@@ -147,7 +164,7 @@ button {
 .page-header {
   position: sticky;
   top: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--bg-header);
   backdrop-filter: blur(12px);
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
@@ -403,7 +420,7 @@ button {
 .series-id {
   font-size: 12px;
   color: var(--accent);
-  background: rgba(29, 155, 240, 0.12);
+  background: var(--accent-alpha-12);
   padding: 6px 12px;
   border-radius: 9999px;
   white-space: nowrap;
@@ -419,7 +436,7 @@ button {
   display: block;
   padding: 16px;
   border-radius: 16px;
-  background: rgba(29, 155, 240, 0.05);
+  background: var(--accent-alpha-05);
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
@@ -671,7 +688,7 @@ button {
 /* User Profile */
 .profile-banner {
   height: 200px;
-  background: linear-gradient(135deg, #1d9bf0, #1a1a2e);
+  background: linear-gradient(135deg, var(--accent), var(--banner-gradient-end));
 }
 
 .profile-header {
