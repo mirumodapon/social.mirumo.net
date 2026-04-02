@@ -10,6 +10,10 @@ const posts = defineCollection({
     abstract: z.string(),
     date: z.string(),
     tags: z.array(z.string()).optional(),
+    series: z.union([
+      z.string(),
+      z.object({ id: z.string(), name: z.string() }),
+    ]).optional(),
   }),
 });
 

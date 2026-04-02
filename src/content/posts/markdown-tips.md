@@ -4,6 +4,9 @@ handle: "techcat"
 avatar: "auto"
 abstract: "整理了一些常用的 Markdown 技巧，包含表格對齊、任務清單、引用嵌套等，分享給大家！"
 date: "2026-04-01T18:00:00"
+series:
+  id: "frontend-tutorial"
+  name: "前端教學"
 tags: ["Markdown", "教學"]
 ---
 

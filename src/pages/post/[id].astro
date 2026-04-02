@@ -15,6 +15,24 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const allPosts = await getCollection('posts');
+
+function normalizeSeries(series) {
+  if (!series) return null;
+  return typeof series === 'string'
+    ? { id: series.toLowerCase().replace(/\s+/g, '-'), name: series }
+    : series;
+}
+
+const currentSeries = normalizeSeries(post.data.series);
+const seriesPosts = currentSeries
+  ? allPosts
+      .filter((item) => {
+        const itemSeries = normalizeSeries(item.data.series);
+        return itemSeries?.id === currentSeries.id && item.id !== post.id;
+      })
+      .sort((a, b) => new Date(a.data.date).getTime() - new Date(b.data.date).getTime())
+  : [];
 
 const avatarColors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#f97316'];
 const colorIndex = post.data.author.charCodeAt(0) % avatarColors.length;
@@ -60,6 +78,27 @@ function formatFullDate(dateStr: string) {
           <span class="tag">#{tag}</span>
         ))}
       </div>
+    )}
+
+    {currentSeries && seriesPosts.length > 0 && (
+      <section class="post-series">
+        <div class="series-header">
+          <div>
+            <div class="series-label">系列文章</div>
+            <div class="series-title">{currentSeries.name}</div>
+          </div>
+          <span class="series-id">{currentSeries.id}</span>
+        </div>
+
+        <div class="series-list">
+          {seriesPosts.map((seriesPost) => (
+            <a href={`/post/${seriesPost.id}`} class="series-item">
+              <div class="series-item-title">{seriesPost.data.abstract}</div>
+              <div class="series-item-meta">{formatFullDate(seriesPost.data.date)}</div>
+            </a>
+          ))}
+        </div>
+      </section>
     )}
 
     <div class="post-timestamp">

@@ -4,6 +4,9 @@ handle: "designhua"
 avatar: "auto"
 abstract: "CSS Grid 真的是前端排版的魔法，以前用 float 排版要寫一堆 hack，現在只要幾行就搞定三欄式佈局！"
 date: "2026-03-30T16:00:00"
+series:
+  id: "frontend-tutorial"
+  name: "前端教學"
 tags: ["CSS", "前端", "教學"]
 ---
 
