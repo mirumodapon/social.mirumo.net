@@ -1,30 +1,42 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import TagPage from '../../components/TagPage.astro';
+import TagPage from '../../../../components/TagPage.astro';
 
 const PER_PAGE = 5;
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
-  const tagSet = new Set<string>();
+  const PER_PAGE = 5;
+  const tagCounts = new Map<string, number>();
 
   posts.forEach((post) => {
-    post.data.tags?.forEach((tag) => tagSet.add(tag));
+    post.data.tags?.forEach((tag) => {
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    });
   });
 
-  return Array.from(tagSet).map((tag) => ({ params: { tag } }));
+  const paths = [];
+  for (const [tag, count] of tagCounts.entries()) {
+    const totalPages = Math.max(1, Math.ceil(count / PER_PAGE));
+    for (let page = 2; page <= totalPages; page += 1) {
+      paths.push({ params: { tag, page: String(page) } });
+    }
+  }
+
+  return paths;
 }
 
 const posts = await getCollection('posts');
 const tag = Astro.params.tag;
+const page = Number(Astro.params.page) || 1;
 const filteredPosts = posts
   .filter((post) => post.data.tags?.includes(tag))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const postCount = filteredPosts.length;
-const currentPage = 1;
+const currentPage = Math.min(Math.max(page, 1), Math.max(1, Math.ceil(postCount / PER_PAGE)));
 const totalPages = Math.max(1, Math.ceil(postCount / PER_PAGE));
-const pagePosts = filteredPosts.slice(0, PER_PAGE);
+const pagePosts = filteredPosts.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 const encodedTag = encodeURIComponent(tag);
 const basePath = `/tag/${encodedTag}`;
 ---

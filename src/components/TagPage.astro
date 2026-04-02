@@ -1,0 +1,99 @@
+---
+import PostCard from './PostCard.astro';
+
+interface Props {
+  tag: string;
+  basePath: string;
+  currentPage: number;
+  totalPages: number;
+  pagePosts: Array<any>;
+  postCount: number;
+}
+
+const { tag, basePath, currentPage, totalPages, pagePosts, postCount } = Astro.props;
+
+function pagePath(page: number) {
+  return page === 1 ? basePath : `${basePath}/page/${page}`;
+}
+
+function getPaginationItems(totalPages: number, currentPage: number) {
+  const pages = [];
+  const maxVisible = 7;
+
+  if (totalPages <= maxVisible) {
+    for (let i = 1; i <= totalPages; i += 1) {
+      pages.push({ type: 'page', number: i });
+    }
+    return pages;
+  }
+
+  pages.push({ type: 'page', number: 1 });
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(totalPages - 1, currentPage + 1);
+
+  if (start > 2) pages.push({ type: 'dots' });
+
+  for (let i = start; i <= end; i += 1) {
+    pages.push({ type: 'page', number: i });
+  }
+
+  if (end < totalPages - 1) pages.push({ type: 'dots' });
+
+  pages.push({ type: 'page', number: totalPages });
+  return pages;
+}
+
+const paginationItems = getPaginationItems(totalPages, currentPage);
+---
+
+<div class="tag-page">
+  <div class="page-header">
+    <h1>標籤：#{tag}</h1>
+    <p class="subtitle">共 {postCount} 篇文章</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active">為你推薦</button>
+    <button class="tab">追蹤中</button>
+  </div>
+
+  {postCount > 0 ? (
+    pagePosts.map((post) => (
+      <PostCard
+        id={post.id}
+        author={post.data.author}
+        handle={post.data.handle}
+        avatar={post.data.avatar}
+        abstract={post.data.abstract}
+        date={post.data.date}
+        tags={post.data.tags}
+        hasContent={!!post.body?.trim()}
+      />
+    ))
+  ) : (
+    <div class="empty-message">目前沒有標籤為 #{tag} 的文章。</div>
+  )}
+
+  {totalPages > 1 && (
+    <div class="pagination">
+      {currentPage > 1 && (
+        <a href={pagePath(currentPage - 1)} class="pagination-link">上一頁</a>
+      )}
+      {paginationItems.map((item) =>
+        item.type === 'dots' ? (
+          <span class="pagination-dots">…</span>
+        ) : (
+          <a
+            href={pagePath(item.number)}
+            class:list={['pagination-link', { active: item.number === currentPage }]}
+          >
+            {item.number}
+          </a>
+        )
+      )}
+      {currentPage < totalPages && (
+        <a href={pagePath(currentPage + 1)} class="pagination-link">下一頁</a>
+      )}
+    </div>
+  )}
+</div>
