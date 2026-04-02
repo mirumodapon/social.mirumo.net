@@ -2,6 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import TagPage from '../../../components/TagPage.astro';
+import { RANDOM_PAGE_SIZE } from '../../../config/site';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -28,7 +29,7 @@ for (let i = shuffledPosts.length - 1; i > 0; i--) {
 const postCount = shuffledPosts.length;
 const currentPage = 1;
 const totalPages = 1; // 隨機頁面不分頁
-const pagePosts = shuffledPosts.slice(0, 20); // 最多顯示 20 篇
+const pagePosts = shuffledPosts.slice(0, RANDOM_PAGE_SIZE);
 const encodedTag = encodeURIComponent(tag);
 const basePath = `/tag/${encodedTag}`;
 ---

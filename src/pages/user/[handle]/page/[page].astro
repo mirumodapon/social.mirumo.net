@@ -2,11 +2,9 @@
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import PostCard from '../../../../components/PostCard.astro';
 import { getCollection } from 'astro:content';
-
-const PER_PAGE = 5;
+import { POSTS_PER_PAGE } from '../../../../config/site';
 
 export async function getStaticPaths() {
-  const PER_PAGE = 5;
   const posts = await getCollection('posts');
   const users = await getCollection('users');
   const handleCounts = new Map<string, number>();
@@ -18,7 +16,7 @@ export async function getStaticPaths() {
 
   const paths: { params: { handle: string; page: string }; props: { userProfile: any } }[] = [];
   for (const [handle, count] of handleCounts.entries()) {
-    const totalPages = Math.max(1, Math.ceil(count / PER_PAGE));
+    const totalPages = Math.max(1, Math.ceil(count / POSTS_PER_PAGE));
     const userProfile = users.find((u) => u.data.handle === handle);
     for (let page = 2; page <= totalPages; page += 1) {
       paths.push({
@@ -57,9 +55,9 @@ const colorIndex = displayName.charCodeAt(0) % avatarColors.length;
 const avatarColor = avatarColors[colorIndex];
 const avatarLetter = displayName.charAt(0).toUpperCase();
 
-const totalPages = Math.max(1, Math.ceil(userPosts.length / PER_PAGE));
+const totalPages = Math.max(1, Math.ceil(userPosts.length / POSTS_PER_PAGE));
 const currentPage = Math.min(Math.max(page, 1), totalPages);
-const pagePosts = userPosts.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+const pagePosts = userPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
 const basePath = `/user/${handle}`;
 const pagePath = (num: number) => (num === 1 ? basePath : `${basePath}/page/${num}`);
 

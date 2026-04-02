@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { SIDEBAR_TAG_COUNT } from '../config/site';
 
 const posts = await getCollection('posts');
 const tagCounts = new Map<string, number>();
@@ -12,7 +13,7 @@ posts.forEach((post) => {
 
 const trends = Array.from(tagCounts.entries())
   .sort((a, b) => b[1] - a[1])
-  .slice(0, 5)
+  .slice(0, SIDEBAR_TAG_COUNT)
   .map(([tag, count]) => ({
     tag,
     label: `#${tag}`,

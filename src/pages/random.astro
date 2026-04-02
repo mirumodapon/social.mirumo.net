@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import { getCollection } from 'astro:content';
+import { RANDOM_PAGE_SIZE } from '../config/site';
 
 const posts = await getCollection('posts');
 // 隨機排序貼文 (Fisher-Yates Shuffle)
@@ -11,8 +12,7 @@ for (let i = shuffledPosts.length - 1; i > 0; i--) {
   [shuffledPosts[i], shuffledPosts[j]] = [shuffledPosts[j], shuffledPosts[i]];
 }
 
-const PER_PAGE = 20; // 隨機頁面顯示多一點，不分頁以增加隨機感
-const pagePosts = shuffledPosts.slice(0, PER_PAGE);
+const pagePosts = shuffledPosts.slice(0, RANDOM_PAGE_SIZE);
 ---
 
 <BaseLayout title="隨機推薦 / Social">
