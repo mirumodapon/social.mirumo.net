@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import TagPage from '../../../components/TagPage.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const tagSet = new Set<string>();
+
+  posts.forEach((post) => {
+    post.data.tags?.forEach((tag) => tagSet.add(tag));
+  });
+
+  return Array.from(tagSet).map((tag) => ({ params: { tag } }));
+}
+
+const posts = await getCollection('posts');
+const tag = Astro.params.tag;
+const filteredPosts = posts.filter((post) => post.data.tags?.includes(tag));
+
+// 隨機排序貼文 (Fisher-Yates Shuffle)
+const shuffledPosts = [...filteredPosts];
+for (let i = shuffledPosts.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [shuffledPosts[i], shuffledPosts[j]] = [shuffledPosts[j], shuffledPosts[i]];
+}
+
+const postCount = shuffledPosts.length;
+const currentPage = 1;
+const totalPages = 1; // 隨機頁面不分頁
+const pagePosts = shuffledPosts.slice(0, 20); // 最多顯示 20 篇
+const encodedTag = encodeURIComponent(tag);
+const basePath = `/tag/${encodedTag}`;
+---
+
+<BaseLayout title={`#${tag} 隨機推薦 / Social`}>
+  <TagPage
+    tag={tag}
+    basePath={basePath}
+    currentPage={currentPage}
+    totalPages={totalPages}
+    pagePosts={pagePosts}
+    postCount={postCount}
+    isRandom={true}
+  />
+</BaseLayout>

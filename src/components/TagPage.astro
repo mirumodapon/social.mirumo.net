@@ -8,9 +8,10 @@ interface Props {
   totalPages: number;
   pagePosts: Array<any>;
   postCount: number;
+  isRandom?: boolean;
 }
 
-const { tag, basePath, currentPage, totalPages, pagePosts, postCount } = Astro.props;
+const { tag, basePath, currentPage, totalPages, pagePosts, postCount, isRandom = false } = Astro.props;
 
 function pagePath(page: number) {
   return page === 1 ? basePath : `${basePath}/page/${page}`;
@@ -53,8 +54,8 @@ const paginationItems = getPaginationItems(totalPages, currentPage);
   </div>
 
   <div class="tabs">
-    <button class="tab active">為你推薦</button>
-    <button class="tab">追蹤中</button>
+    <a href={basePath} class:list={['tab', { active: !isRandom }]}>依時間排序</a>
+    <a href={`${basePath}/random`} class:list={['tab', { active: isRandom }]}>隨機推薦</a>
   </div>
 
   {postCount > 0 ? (
@@ -74,9 +75,9 @@ const paginationItems = getPaginationItems(totalPages, currentPage);
     <div class="empty-message">目前沒有標籤為 #{tag} 的文章。</div>
   )}
 
-  {totalPages > 1 && (
+  {!isRandom && totalPages > 1 && (
     <div class="pagination">
-      {currentPage > 1 && (
+...      {currentPage > 1 && (
         <a href={pagePath(currentPage - 1)} class="pagination-link">上一頁</a>
       )}
       {paginationItems.map((item) =>

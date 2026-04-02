@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('posts');
+// 隨機排序貼文 (Fisher-Yates Shuffle)
+const shuffledPosts = [...posts];
+for (let i = shuffledPosts.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [shuffledPosts[i], shuffledPosts[j]] = [shuffledPosts[j], shuffledPosts[i]];
+}
+
+const PER_PAGE = 20; // 隨機頁面顯示多一點，不分頁以增加隨機感
+const pagePosts = shuffledPosts.slice(0, PER_PAGE);
+---
+
+<BaseLayout title="隨機推薦 / Social">
+  <div class="page-header">
+    <h1>首頁</h1>
+  </div>
+
+  <div class="tabs">
+    <a href="/" class="tab">依時間排序</a>
+    <a href="/random" class="tab active">隨機推薦</a>
+  </div>
+
+  {pagePosts.map((post) => (
+    <PostCard
+      id={post.id}
+      author={post.data.author}
+      handle={post.data.handle}
+      avatar={post.data.avatar}
+      abstract={post.data.abstract}
+      date={post.data.date}
+      tags={post.data.tags}
+      hasContent={!!post.body?.trim()}
+    />
+  ))}
+
+  <div class="empty-message" style="margin-top: 20px;">
+    這是在建置時生成的隨機推薦列表。
+  </div>
+</BaseLayout>
