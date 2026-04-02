@@ -50,7 +50,9 @@ function formatFullDate(dateStr: string) {
 <BaseLayout title={`${post.data.author} 的貼文 / Social`}>
   <div class="page-header">
     <div class="back-btn">
-      <a href="/" class="back-arrow"><i class="ti ti-arrow-left"></i></a>
+      <a href="/" class="back-arrow" onclick="history.length > 1 ? history.back() : null; return false;">
+        <i class="ti ti-arrow-left"></i>
+      </a>
       <h1>貼文</h1>
     </div>
   </div>
