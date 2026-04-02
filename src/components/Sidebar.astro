@@ -6,12 +6,6 @@ const trends = [
   { category: '科技', name: '#OpenSource', count: '3.7K 則貼文' },
   { category: '設計', name: '#DarkMode', count: '2.9K 則貼文' },
 ];
-
-const suggestions = [
-  { name: 'Astro', handle: '@astrobuild', icon: 'ti-rocket', color: '#6d28d9' },
-  { name: 'MDX', handle: '@mdxjs', icon: 'ti-file-text', color: '#0ea5e9' },
-  { name: 'Vite', handle: '@vitejs', icon: 'ti-bolt', color: '#f59e0b' },
-];
 ---
 
 <aside class="sidebar-right">
@@ -27,25 +21,6 @@ const suggestions = [
         <div class="trend-category">{trend.category} · 趨勢話題</div>
         <div class="trend-name">{trend.name}</div>
         <div class="trend-count">{trend.count}</div>
-      </div>
-    ))}
-    <div class="widget-show-more">顯示更多</div>
-  </div>
-
-  <div class="widget">
-    <h2 class="widget-title">推薦追蹤</h2>
-    {suggestions.map((user) => (
-      <div class="follow-item">
-        <div class="post-avatar">
-          <div class="avatar-placeholder" style={`background:${user.color};width:40px;height:40px;`}>
-            <i class={`ti ${user.icon}`}></i>
-          </div>
-        </div>
-        <div class="follow-info">
-          <div class="follow-name">{user.name}</div>
-          <div class="follow-handle">{user.handle}</div>
-        </div>
-        <button class="follow-btn">追蹤</button>
       </div>
     ))}
     <div class="widget-show-more">顯示更多</div>
