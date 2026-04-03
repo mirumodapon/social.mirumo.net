@@ -1,4 +1,6 @@
 ---
+import { getCollection } from 'astro:content';
+
 interface Props {
   id: string;
   author: string;
@@ -10,7 +12,11 @@ interface Props {
   hasContent: boolean;
 }
 
-const { id, author, handle, avatar, abstract: abstractText, date, tags, hasContent } = Astro.props;
+const { id, author, handle, avatar: postAvatar, abstract: abstractText, date, tags, hasContent } = Astro.props;
+
+const users = await getCollection('users');
+const postUser = users.find((u) => u.data.handle === handle);
+const avatar = (postAvatar === 'auto' && postUser) ? postUser.data.avatar : postAvatar;
 
 const avatarColors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#f97316'];
 const colorIndex = author.charCodeAt(0) % avatarColors.length;
@@ -37,9 +43,13 @@ const Tag = 'div';
   class:list={['post-card', { clickable: hasContent }]}
 >
   <a href={`/user/${handle}`} class="post-avatar" onclick="event.stopPropagation();">
-    <div class="avatar-placeholder" style={`background:${avatarColor}`}>
-      {avatar === 'auto' ? avatarLetter : avatar}
-    </div>
+    {avatar.startsWith('http') || avatar.startsWith('/') ? (
+      <img src={avatar} alt={author} />
+    ) : (
+      <div class="avatar-placeholder" style={`background:${avatarColor}`}>
+        {avatar === 'auto' ? avatarLetter : avatar}
+      </div>
+    )}
   </a>
   <div class="post-body">
     <div class="post-header">

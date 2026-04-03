@@ -16,6 +16,9 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const allPosts = await getCollection('posts');
+const users = await getCollection('users');
+const postUser = users.find((u) => u.data.handle === post.data.handle);
+const displayAvatar = (post.data.avatar === 'auto' && postUser) ? postUser.data.avatar : post.data.avatar;
 
 function normalizeSeries(series) {
   if (!series) return null;
@@ -60,9 +63,13 @@ function formatFullDate(dateStr: string) {
   <article class="post-detail">
     <div class="post-header">
       <a href={`/user/${post.data.handle}`} class="post-avatar">
-        <div class="avatar-placeholder" style={`background:${avatarColor};width:48px;height:48px;`}>
-          {post.data.avatar === 'auto' ? avatarLetter : post.data.avatar}
-        </div>
+        {displayAvatar.startsWith('http') || displayAvatar.startsWith('/') ? (
+          <img src={displayAvatar} alt={post.data.author} />
+        ) : (
+          <div class="avatar-placeholder" style={`background:${avatarColor};width:48px;height:48px;`}>
+            {displayAvatar === 'auto' ? avatarLetter : displayAvatar}
+          </div>
+        )}
       </a>
       <a href={`/user/${post.data.handle}`} class="post-author-info">
         <span class="post-author">{post.data.author}</span>

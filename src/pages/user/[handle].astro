@@ -96,9 +96,13 @@ const paginationItems = getPaginationItems(totalPages, currentPage);
 
   <div class="profile-header">
     <div class="profile-avatar">
-      <div class="avatar-placeholder" style={`background:${avatarColor}`}>
-        {displayAvatar === 'auto' ? avatarLetter : displayAvatar}
-      </div>
+      {displayAvatar.startsWith('http') || displayAvatar.startsWith('/') ? (
+        <img src={displayAvatar} alt={displayName} />
+      ) : (
+        <div class="avatar-placeholder" style={`background:${avatarColor}`}>
+          {displayAvatar === 'auto' ? avatarLetter : displayAvatar}
+        </div>
+      )}
     </div>
     <div class="profile-name">{displayName}</div>
     <div class="profile-handle-text">@{handle}</div>
