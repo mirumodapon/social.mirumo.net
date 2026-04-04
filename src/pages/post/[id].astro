@@ -42,12 +42,6 @@ const colorIndex = post.data.author.charCodeAt(0) % avatarColors.length;
 const avatarColor = avatarColors[colorIndex];
 const avatarLetter = post.data.author.charAt(0).toUpperCase();
 
-function formatFullDate(dateStr: string) {
-  const d = new Date(dateStr);
-  const hours = d.getHours().toString().padStart(2, '0');
-  const mins = d.getMinutes().toString().padStart(2, '0');
-  return `${hours}:${mins} · ${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
-}
 ---
 
 <BaseLayout title={`${post.data.author} 的貼文 / Social`}>
@@ -103,7 +97,7 @@ function formatFullDate(dateStr: string) {
           {seriesPosts.map((seriesPost) => (
             <a href={`/post/${seriesPost.id}`} class="series-item">
               <div class="series-item-title">{seriesPost.data.abstract}</div>
-              <div class="series-item-meta">{formatFullDate(seriesPost.data.date)}</div>
+              <time class="series-item-meta full-date" datetime={seriesPost.data.date}></time>
             </a>
           ))}
         </div>
@@ -111,10 +105,23 @@ function formatFullDate(dateStr: string) {
     )}
 
     <div class="post-timestamp">
-      {formatFullDate(post.data.date)}
+      <time class="full-date" datetime={post.data.date}></time>
     </div>
   </article>
 </BaseLayout>
+
+<script>
+  function formatFullDate(dateStr: string) {
+    const d = new Date(dateStr);
+    const hours = d.getHours().toString().padStart(2, '0');
+    const mins = d.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${mins} · ${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+  }
+
+  document.querySelectorAll<HTMLTimeElement>('time.full-date[datetime]').forEach((el) => {
+    el.textContent = formatFullDate(el.getAttribute('datetime')!);
+  });
+</script>
 
 <style>
   .post-avatar {

@@ -23,18 +23,6 @@ const colorIndex = author.charCodeAt(0) % avatarColors.length;
 const avatarColor = avatarColors[colorIndex];
 const avatarLetter = author.charAt(0).toUpperCase();
 
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diff = now.getTime() - d.getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return '剛剛';
-  if (hours < 24) return `${hours}小時`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}天`;
-  return `${d.getMonth() + 1}月${d.getDate()}日`;
-}
-
 const Tag = 'div';
 ---
 
@@ -55,7 +43,7 @@ const Tag = 'div';
     <div class="post-header">
       <a href={`/user/${handle}`} class="post-author" onclick="event.stopPropagation();">{author}</a>
       <a href={`/user/${handle}`} class="post-handle" onclick="event.stopPropagation();">@{handle}</a>
-      <span class="post-date">{formatDate(date)}</span>
+      <time class="post-date" datetime={date}></time>
     </div>
     <p class="post-text">{abstractText}</p>
     {tags && tags.length > 0 && (
@@ -73,6 +61,24 @@ const Tag = 'div';
     )}
   </div>
 </Tag>
+
+<script>
+  function formatDate(dateStr: string) {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    if (hours < 1) return '剛剛';
+    if (hours < 24) return `${hours}小時`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}天`;
+    return `${d.getMonth() + 1}月${d.getDate()}日`;
+  }
+
+  document.querySelectorAll<HTMLTimeElement>('time.post-date[datetime]').forEach((el) => {
+    el.textContent = formatDate(el.getAttribute('datetime')!);
+  });
+</script>
 
 <style>
   .tag:hover {
