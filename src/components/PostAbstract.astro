@@ -1,0 +1,23 @@
+---
+import { renderMarkdown } from '../utils/renderMarkdown';
+
+interface Props {
+  content: string;
+  wrapperClass?: string;
+  stopLinkPropagation?: boolean;
+}
+
+const {
+  content,
+  wrapperClass,
+  stopLinkPropagation = false,
+} = Astro.props;
+
+const renderedContent = await renderMarkdown(content);
+---
+
+<div
+  class={wrapperClass}
+  onclick={stopLinkPropagation ? "if (event.target.closest('a')) event.stopPropagation();" : undefined}
+  set:html={renderedContent}
+/>

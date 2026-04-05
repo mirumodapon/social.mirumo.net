@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
+import PostAbstract from '../../components/PostAbstract.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -71,6 +72,8 @@ const avatarLetter = post.data.author.charAt(0).toUpperCase();
       </a>
     </div>
 
+    <PostAbstract content={post.data.abstract} wrapperClass="post-text post-abstract" />
+
     <div class="post-text">
       <Content />
     </div>
@@ -95,10 +98,17 @@ const avatarLetter = post.data.author.charAt(0).toUpperCase();
 
         <div class="series-list">
           {seriesPosts.map((seriesPost) => (
-            <a href={`/post/${seriesPost.id}`} class="series-item">
-              <div class="series-item-title">{seriesPost.data.abstract}</div>
+            <div
+              class="series-item"
+              onclick={`location.href='/post/${seriesPost.id}'`}
+            >
+              <PostAbstract
+                content={seriesPost.data.abstract}
+                wrapperClass="series-item-title post-text"
+                stopLinkPropagation={true}
+              />
               <time class="series-item-meta full-date" datetime={seriesPost.data.date}></time>
-            </a>
+            </div>
           ))}
         </div>
       </section>

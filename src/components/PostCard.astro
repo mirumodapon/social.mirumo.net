@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import PostAbstract from './PostAbstract.astro';
 
 interface Props {
   id: string;
@@ -45,7 +46,11 @@ const Tag = 'div';
       <a href={`/user/${handle}`} class="post-handle" onclick="event.stopPropagation();">@{handle}</a>
       <time class="post-date" datetime={date}></time>
     </div>
-    <p class="post-text">{abstractText}</p>
+    <PostAbstract
+      content={abstractText}
+      wrapperClass="post-text"
+      stopLinkPropagation={hasContent}
+    />
     {tags && tags.length > 0 && (
       <div class="post-tags">
         {tags.map((tag) => (
