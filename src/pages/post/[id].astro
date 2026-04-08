@@ -19,6 +19,7 @@ const { Content } = await render(post);
 const allPosts = await getCollection('posts');
 const users = await getCollection('users');
 const postUser = users.find((u) => u.data.handle === post.data.handle);
+const hasUserProfile = !!postUser;
 const displayAvatar = (post.data.avatar === 'auto' && postUser) ? postUser.data.avatar : post.data.avatar;
 
 function normalizeSeries(series) {
@@ -57,19 +58,39 @@ const avatarLetter = post.data.author.charAt(0).toUpperCase();
 
   <article class="post-detail">
     <div class="post-header">
-      <a href={`/user/${post.data.handle}`} class="post-avatar">
-        {displayAvatar.startsWith('http') || displayAvatar.startsWith('/') ? (
-          <img src={displayAvatar} alt={post.data.author} />
-        ) : (
-          <div class="avatar-placeholder" style={`background:${avatarColor};width:48px;height:48px;`}>
-            {displayAvatar === 'auto' ? avatarLetter : displayAvatar}
+      {hasUserProfile ? (
+        <>
+          <a href={`/user/${post.data.handle}`} class="post-avatar">
+            {displayAvatar.startsWith('http') || displayAvatar.startsWith('/') ? (
+              <img src={displayAvatar} alt={post.data.author} />
+            ) : (
+              <div class="avatar-placeholder" style={`background:${avatarColor};width:48px;height:48px;`}>
+                {displayAvatar === 'auto' ? avatarLetter : displayAvatar}
+              </div>
+            )}
+          </a>
+          <a href={`/user/${post.data.handle}`} class="post-author-info">
+            <span class="post-author">{post.data.author}</span>
+            <span class="post-handle">@{post.data.handle}</span>
+          </a>
+        </>
+      ) : (
+        <>
+          <div class="post-avatar">
+            {displayAvatar.startsWith('http') || displayAvatar.startsWith('/') ? (
+              <img src={displayAvatar} alt={post.data.author} />
+            ) : (
+              <div class="avatar-placeholder" style={`background:${avatarColor};width:48px;height:48px;`}>
+                {displayAvatar === 'auto' ? avatarLetter : displayAvatar}
+              </div>
+            )}
           </div>
-        )}
-      </a>
-      <a href={`/user/${post.data.handle}`} class="post-author-info">
-        <span class="post-author">{post.data.author}</span>
-        <span class="post-handle">@{post.data.handle}</span>
-      </a>
+          <div class="post-author-info">
+            <span class="post-author">{post.data.author}</span>
+            <span class="post-handle">@{post.data.handle}</span>
+          </div>
+        </>
+      )}
     </div>
 
     <PostAbstract content={post.data.abstract} wrapperClass="post-text post-abstract" />
@@ -139,14 +160,14 @@ const avatarLetter = post.data.author.charAt(0).toUpperCase();
     border-radius: 50%;
     transition: opacity 0.2s;
   }
-  .post-avatar:hover {
+  a.post-avatar:hover {
     opacity: 0.85;
   }
   .post-author-info {
     display: flex;
     flex-direction: column;
   }
-  .post-author-info:hover .post-author {
+  a.post-author-info:hover .post-author {
     text-decoration: underline;
   }
 </style>

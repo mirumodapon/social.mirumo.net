@@ -17,6 +17,7 @@ const { id, author, handle, avatar: postAvatar, abstract: abstractText, date, ta
 
 const users = await getCollection('users');
 const postUser = users.find((u) => u.data.handle === handle);
+const hasUserProfile = !!postUser;
 const avatar = (postAvatar === 'auto' && postUser) ? postUser.data.avatar : postAvatar;
 
 const avatarColors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#f97316'];
@@ -31,19 +32,40 @@ const Tag = 'div';
   onclick={hasContent ? `location.href='/post/${id}'` : undefined} 
   class:list={['post-card', { clickable: hasContent }]}
 >
-  <a href={`/user/${handle}`} class="post-avatar" onclick="event.stopPropagation();">
-    {avatar.startsWith('http') || avatar.startsWith('/') ? (
-      <img src={avatar} alt={author} />
-    ) : (
-      <div class="avatar-placeholder" style={`background:${avatarColor}`}>
-        {avatar === 'auto' ? avatarLetter : avatar}
-      </div>
-    )}
-  </a>
+  {hasUserProfile ? (
+    <a href={`/user/${handle}`} class="post-avatar" onclick="event.stopPropagation();">
+      {avatar.startsWith('http') || avatar.startsWith('/') ? (
+        <img src={avatar} alt={author} />
+      ) : (
+        <div class="avatar-placeholder" style={`background:${avatarColor}`}>
+          {avatar === 'auto' ? avatarLetter : avatar}
+        </div>
+      )}
+    </a>
+  ) : (
+    <div class="post-avatar">
+      {avatar.startsWith('http') || avatar.startsWith('/') ? (
+        <img src={avatar} alt={author} />
+      ) : (
+        <div class="avatar-placeholder" style={`background:${avatarColor}`}>
+          {avatar === 'auto' ? avatarLetter : avatar}
+        </div>
+      )}
+    </div>
+  )}
   <div class="post-body">
     <div class="post-header">
-      <a href={`/user/${handle}`} class="post-author" onclick="event.stopPropagation();">{author}</a>
-      <a href={`/user/${handle}`} class="post-handle" onclick="event.stopPropagation();">@{handle}</a>
+      {hasUserProfile ? (
+        <>
+          <a href={`/user/${handle}`} class="post-author" onclick="event.stopPropagation();">{author}</a>
+          <a href={`/user/${handle}`} class="post-handle" onclick="event.stopPropagation();">@{handle}</a>
+        </>
+      ) : (
+        <>
+          <span class="post-author">{author}</span>
+          <span class="post-handle">@{handle}</span>
+        </>
+      )}
       <time class="post-date" datetime={date}></time>
     </div>
     <PostAbstract
@@ -95,13 +117,13 @@ const Tag = 'div';
     border-radius: 50%;
     transition: opacity 0.2s;
   }
-  .post-avatar:hover {
+  a.post-avatar:hover {
     opacity: 0.85;
   }
-  .post-author:hover {
+  a.post-author:hover {
     text-decoration: underline;
   }
-  .post-handle:hover {
+  a.post-handle:hover {
     text-decoration: underline;
   }
 </style>
