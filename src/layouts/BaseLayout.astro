@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Sidebar from '../components/Sidebar.astro';
-import { GOOGLE_TAG_MANAGER_ID } from '../config/site';
+import { GOOGLE_TAG_MANAGER_ID, SITE_NAME } from '../config/site';
 
 interface Props {
   title?: string;
@@ -17,6 +17,7 @@ const hasGoogleTagManager = GOOGLE_TAG_MANAGER_ID.trim().length > 0;
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE_NAME} RSS`} href="/rss.xml" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
     <title>{title}</title>
     {hasGoogleTagManager && (
